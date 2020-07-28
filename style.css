@@ -1,0 +1,39 @@
+body {
+    background-color: antiquewhite;
+}
+
+#form-employee-show {
+    border: 1px solid black;
+    padding: 50px 50px 50px 50px;
+    background-color: aqua;
+}
+
+#form-employee-add {
+    border: 1px solid black;
+    padding: 50px 50px 50px 50px;
+    background-color: aquamarine;
+}
+
+#form-employee-changesalary {
+    border: 1px solid black;
+    padding: 50px 50px 50px 50px;
+    background-color: bisque;
+}
+
+#form-employee-delete {
+    border: 1px solid black;
+    padding: 50px 50px 50px 50px;
+    background-color: chartreuse;
+}
+
+#form-phone-add {
+    border: 1px solid black;
+    padding: 50px 50px 50px 50px;
+    background-color: darkgoldenrod;
+}
+
+#form-phone-connect {
+    border: 1px solid black;
+    padding: 50px 50px 50px 50px;
+    background-color: hotpink;
+}

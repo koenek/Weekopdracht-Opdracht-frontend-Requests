@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+    <!-- <input type="text" id="denaam"><input type="button" onclick=posten() value=versturen>
+    <hr> -->
+
+    <div id="form-employee-show">
+        <h1>Huidige Employees</h1>
+        <!-- <button onclick="showAllEmployees()">PRESS ME</button> -->
+        <ul id="employee-list"></ul>
+    </div>
+
+    <div id="form-employee-add">
+        <h1>Employee toevoegen: </h1>
+        <form>
+            Naam: <input type="text" id="name">
+            Salaris: <input type="text" id="salary"> 
+            <button type="submit" onclick="submitNameAndSalary()">Voeg Employee toe</button>
+        </form>
+    </div>
+
+    <div id="form-employee-changesalary">
+        <h1>Salaris aanpassen op basis van id</h1>
+        <form>
+            ID: <input type="number" id="id">
+            Nieuw salaris: <input type="number" id="new-salary">
+            <button type="submit" onclick="changeSalary()">Verander salaris</button>
+        </form>
+    </div>
+
+    <div id="form-employee-delete">
+        <h1>Employee verwijderen</h1>
+        <form>
+            ID: <input type="number" id="delete-id">
+            <button type="submit" onclick="deleteEmployee()">Verwijderen</button>
+        </form>
+    </div>
+
+    <div id="form-phone-add">
+        <h1>Phone toevoegen</h1>
+        <form>
+            Telefoonnummer: <input type="text" id="telnum">
+            <button type="submit" onclick="addPhone()">Voeg Phone toe</button>
+        </form>
+    </div>
+
+    <div id="form-phone-connect">
+        <h1>Phone koppelen aan employee</h1>
+        <form>
+            Phone id: <input type="number" id="phone-id" required>
+            Employee id: <input type="number" id="emp-id" required>
+            <button type="submit" onclick="connectPhoneToEmployee()">Koppel Phone aan employee</button>
+        </form>
+    </div>
+
+    <!-- <input type="button" onclick="opnaardebackend()" value="Op naar de back end">
+    <div id="uitkomst">Hij doet het</div> -->
+</body>
+
+<script>
+
+    const opnaardebackend = () => {
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            hetObject = JSON.parse(this.responseText);
+            console.log(this.responseText);
+            //document.getElementById("uitkomst").innerHTML = hetObject.name;
+            document.getElementById("uitkomst").innerHTML = this.responseText;
+        }
+        xhr.open("GET", "http://localhost:8082/jojo", true); // asynchroon
+        xhr.send();
+    }
+
+    function posten() {
+        var obj = {};
+        obj.name = document.getElementById("denaam").value;
+        objJSON = JSON.stringify(obj);
+
+        var xhr = new XMLHttpRequest();
+        // xhr.onreadystatechange = function () {
+        //     console.log("antwoord in post");
+        // }
+        xhr.open("POST", "http://localhost:8082/jojo2", true); // asynchroon
+        xhr.setRequestHeader("Content-Type", "application/json");
+
+        xhr.send(objJSON);
+    }
+
+    function submitNameAndSalary() {
+
+        let obj = {};
+        obj.name = document.getElementById("name").value;
+        obj.salary = document.getElementById("salary").value;
+
+        const objJSON = JSON.stringify(obj);
+
+        let xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            console.log("antwoord in post?")
+        }
+        xhr.open("POST", "http://localhost:8082/employees/new", true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+
+        xhr.send(objJSON);
+    }
+
+    function addPhone() {
+        let obj = {};
+        obj.phoneNumber = document.getElementById("telnum").value;
+
+        const objJSON = JSON.stringify(obj);
+        console.log(objJSON);
+
+        let xhr = new XMLHttpRequest();
+        xhr.open("POST", "http://localhost:8082/phones/new", true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+
+        xhr.send(objJSON);
+    }
+
+    function showAllEmployees() {
+        let xhr = new XMLHttpRequest();
+
+        const employeeList = document.getElementById("employee-list");
+
+        xhr.onreadystatechange = function () {
+            hetObject = JSON.parse(this.responseText);
+            console.log(hetObject)
+            console.log(hetObject.length)
+            if (xhr.readyState == 4) {
+                hetObject.forEach((e) => {
+                    let markup = ``;
+                    if (e.phone == null) {
+                        markup = `<h2>ID: ${e.id} | NAAM: ${e.name} | SALARIS: ${e.salary}</h2>`;
+                    } else {
+                        markup = `<h2>ID: ${e.id} | NAAM: ${e.name} | SALARIS: ${e.salary} | PHONE: ${e.phone.phoneNumber}</h2>`;
+                    }
+                    // const markup = `<h2>ID: ${e.id} | NAAM: ${e.name} | SALARIS: ${e.salary} | PHONE: ${e.phone.phoneNumber}</h2>`;
+                    employeeList.insertAdjacentHTML('beforeend', markup);
+                });
+            }
+
+        }
+
+        xhr.open("GET", "http://localhost:8082/employees/all", true);
+        xhr.send();
+
+    }
+
+    function changeSalary() {
+        let obj = {};
+        obj.salary = document.getElementById("new-salary").value;
+        obj.id = document.getElementById("id").value;
+        const objJSON = JSON.stringify(obj);
+
+        let xhr = new XMLHttpRequest();
+        xhr.open("PUT", `http://localhost:8082/employees/salary/change/${obj.id}`, true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+
+        xhr.send(objJSON);
+ 
+    }
+
+    function deleteEmployee() {
+        let obj = {};
+        obj.id = document.getElementById("delete-id").value;
+        const objJSON = JSON.stringify(obj);
+
+        // console.log(obj.id);
+
+        let xhr = new XMLHttpRequest();
+        xhr.open("DELETE", `http://localhost:8082/employees/delete/${obj.id}`, true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+
+        xhr.send(objJSON);
+    }
+
+    function connectPhoneToEmployee() {
+        let empObj = {};
+        let phoneObj = {};
+
+        empObj.id = document.getElementById("emp-id").value;
+        phoneObj.id = document.getElementById("phone-id").value;
+
+        const empObjJSON = JSON.stringify(empObj);
+        const phoneObjJSON = JSON.stringify(phoneObj);
+
+        console.log(empObj.id);
+        console.log(phoneObj.id);
+
+        let xhr = new XMLHttpRequest();
+        xhr.open("PUT", `http://localhost:8082/phones/connect/${empObj.id}/${phoneObj.id}`, true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+
+        xhr.send(empObjJSON);
+        xhr.send(phoneObjJSON);
+    }
+
+    document.onload(showAllEmployees());
+
+
+
+</script>
+
+</html>
